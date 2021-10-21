@@ -2131,6 +2131,8 @@ func (s *server) peerDoneHandler(sp *serverPeer) {
 // peers to and from the server, banning peers, and broadcasting messages to
 // peers.  It must be run in a goroutine.
 func (s *server) peerHandler() {
+	defer s.wg.Done()
+
 	// Start the address manager and sync manager, both of which are needed
 	// by peers.  This is done here since their lifecycle is closely tied
 	// to this handler and rather than adding more channels to sychronize
@@ -2223,7 +2225,7 @@ cleanup:
 			break cleanup
 		}
 	}
-	s.wg.Done()
+
 	srvrLog.Tracef("Peer handler done")
 }
 
@@ -2304,6 +2306,8 @@ func (s *server) UpdatePeerHeights(latestBlkHash *chainhash.Hash, latestHeight i
 // sent out but have not yet made it into a block. We periodically rebroadcast
 // them in case our peers restarted or otherwise lost track of them.
 func (s *server) rebroadcastHandler() {
+	defer s.wg.Done()
+
 	// Wait 5 min before first tx rebroadcast.
 	timer := time.NewTimer(5 * time.Minute)
 	pendingInvs := make(map[wire.InvVect]interface{})
@@ -2353,7 +2357,6 @@ cleanup:
 			break cleanup
 		}
 	}
-	s.wg.Done()
 }
 
 // Start begins accepting connections from peers.
@@ -2516,6 +2519,8 @@ func parseListeners(addrs []string) ([]net.Addr, error) {
 }
 
 func (s *server) upnpUpdateThread() {
+	defer s.wg.Done()
+
 	// Go off immediately to prevent code duplication, thereafter we renew
 	// lease every 15 minutes.
 	timer := time.NewTimer(0 * time.Second)
@@ -2565,8 +2570,6 @@ out:
 	} else {
 		srvrLog.Debugf("successfully disestablished UPnP port mapping")
 	}
-
-	s.wg.Done()
 }
 
 // setupRPCListeners returns a slice of listeners that are configured for use

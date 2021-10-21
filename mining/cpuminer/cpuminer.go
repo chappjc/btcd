@@ -109,6 +109,8 @@ type CPUMiner struct {
 // speedMonitor handles tracking the number of hashes per second the mining
 // process is performing.  It must be run as a goroutine.
 func (m *CPUMiner) speedMonitor() {
+	defer m.wg.Done()
+
 	log.Tracef("CPU miner speed monitor started")
 
 	var hashesPerSec float64
@@ -146,7 +148,6 @@ out:
 		}
 	}
 
-	m.wg.Done()
 	log.Tracef("CPU miner speed monitor done")
 }
 
@@ -297,6 +298,8 @@ func (m *CPUMiner) solveBlock(msgBlock *wire.MsgBlock, blockHeight int32,
 //
 // It must be run as a goroutine.
 func (m *CPUMiner) generateBlocks(quit chan struct{}) {
+	defer m.workerWg.Done()
+
 	log.Tracef("Starting generate blocks worker")
 
 	// Start a ticker which is used to signal checks for stale work and
@@ -360,7 +363,6 @@ out:
 		}
 	}
 
-	m.workerWg.Done()
 	log.Tracef("Generate blocks worker done")
 }
 

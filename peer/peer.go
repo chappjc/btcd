@@ -1556,8 +1556,8 @@ out:
 	// Ensure connection is closed.
 	p.Disconnect()
 
-	close(p.inQuit)
 	log.Tracef("Peer input handler done for %s", p)
+	close(p.inQuit)
 }
 
 // queueHandler handles the queuing of outgoing data for the peer. This runs as
@@ -1695,8 +1695,8 @@ cleanup:
 			break cleanup
 		}
 	}
-	close(p.queueQuit)
 	log.Tracef("Peer queue handler done for %s", p)
+	close(p.queueQuit)
 }
 
 // shouldLogWriteError returns whether or not the passed error, which is
@@ -1788,8 +1788,8 @@ cleanup:
 			break cleanup
 		}
 	}
-	close(p.outQuit)
 	log.Tracef("Peer output handler done for %s", p)
+	close(p.outQuit)
 }
 
 // pingHandler periodically pings the peer.  It must be run as a goroutine.

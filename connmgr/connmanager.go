@@ -226,6 +226,7 @@ func (cm *ConnManager) handleFailedConn(c *ConnReq) {
 // connections so that we remain connected to the network.  Connection requests
 // are processed and mapped by their assigned ids.
 func (cm *ConnManager) connHandler() {
+	defer cm.wg.Done()
 
 	var (
 		// pending holds all registered conn requests that have yet to
@@ -352,7 +353,6 @@ out:
 		}
 	}
 
-	cm.wg.Done()
 	log.Trace("Connection handler done")
 }
 
@@ -489,6 +489,8 @@ func (cm *ConnManager) Remove(id uint64) {
 // listenHandler accepts incoming connections on a given listener.  It must be
 // run as a goroutine.
 func (cm *ConnManager) listenHandler(listener net.Listener) {
+	defer cm.wg.Done()
+
 	log.Infof("Server listening on %s", listener.Addr())
 	for atomic.LoadInt32(&cm.stop) == 0 {
 		conn, err := listener.Accept()
@@ -502,7 +504,6 @@ func (cm *ConnManager) listenHandler(listener net.Listener) {
 		go cm.cfg.OnAccept(conn)
 	}
 
-	cm.wg.Done()
 	log.Tracef("Listener handler done for %s", listener.Addr())
 }
 

@@ -1303,6 +1303,8 @@ type wsClient struct {
 // inHandler handles all incoming messages for the websocket connection.  It
 // must be run as a goroutine.
 func (c *wsClient) inHandler() {
+	defer c.wg.Done()
+
 out:
 	for {
 		// Break out of the loop once the quit channel has been closed.
@@ -1756,7 +1758,6 @@ out:
 
 	// Ensure the connection is closed.
 	c.Disconnect()
-	c.wg.Done()
 	rpcsLog.Tracef("Websocket client input handler done for %s", c.addr)
 }
 
@@ -1793,6 +1794,8 @@ func (c *wsClient) serviceRequest(r *parsedRPCCmd) {
 // manager) which are queuing the data.  The data is passed on to outHandler to
 // actually be written.  It must be run as a goroutine.
 func (c *wsClient) notificationQueueHandler() {
+	defer c.wg.Done()
+
 	ntfnSentChan := make(chan bool, 1) // nonblocking sync
 
 	// pendingNtfns is used as a queue for notifications that are ready to
@@ -1854,7 +1857,7 @@ cleanup:
 			break cleanup
 		}
 	}
-	c.wg.Done()
+
 	rpcsLog.Tracef("Websocket client notification queue handler done "+
 		"for %s", c.addr)
 }
@@ -1864,6 +1867,8 @@ cleanup:
 // messages while allowing the sender to continue running asynchronously.  It
 // must be run as a goroutine.
 func (c *wsClient) outHandler() {
+	defer c.wg.Done()
+
 out:
 	for {
 		// Send any messages ready for send until the quit channel is
@@ -1897,7 +1902,7 @@ cleanup:
 			break cleanup
 		}
 	}
-	c.wg.Done()
+
 	rpcsLog.Tracef("Websocket client output handler done for %s", c.addr)
 }
 

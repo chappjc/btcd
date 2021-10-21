@@ -468,6 +468,8 @@ func (c *Client) shouldLogReadError(err error) bool {
 // wsInHandler handles all incoming messages for the websocket connection
 // associated with the client.  It must be run as a goroutine.
 func (c *Client) wsInHandler() {
+	defer c.wg.Done()
+
 out:
 	for {
 		// Break out of the loop once the shutdown channel has been
@@ -493,7 +495,6 @@ out:
 
 	// Ensure the connection is closed.
 	c.Disconnect()
-	c.wg.Done()
 	log.Tracef("RPC client input handler done for %s", c.config.Host)
 }
 
@@ -511,6 +512,8 @@ func (c *Client) disconnectChan() <-chan struct{} {
 // uses a buffered channel to serialize output messages while allowing the
 // sender to continue running asynchronously.  It must be run as a goroutine.
 func (c *Client) wsOutHandler() {
+	defer c.wg.Done()
+
 out:
 	for {
 		// Send any messages ready for send until the client is
@@ -538,7 +541,7 @@ cleanup:
 			break cleanup
 		}
 	}
-	c.wg.Done()
+
 	log.Tracef("RPC client output handler done for %s", c.config.Host)
 }
 
@@ -687,6 +690,8 @@ func (c *Client) resendRequests() {
 //
 // This function must be run as a goroutine.
 func (c *Client) wsReconnectHandler() {
+	defer c.wg.Done()
+
 out:
 	for {
 		select {
@@ -758,7 +763,7 @@ out:
 			break reconnect
 		}
 	}
-	c.wg.Done()
+
 	log.Tracef("RPC client reconnect handler done for %s", c.config.Host)
 }
 
@@ -816,6 +821,8 @@ func (c *Client) handleSendPostMessage(details *sendPostDetails) {
 // while allowing the sender to continue running asynchronously.  It must be run
 // as a goroutine.
 func (c *Client) sendPostHandler() {
+	defer c.wg.Done()
+
 out:
 	for {
 		// Send any messages ready for send until the shutdown channel
@@ -844,9 +851,8 @@ cleanup:
 			break cleanup
 		}
 	}
-	c.wg.Done()
-	log.Tracef("RPC client send handler done for %s", c.config.Host)
 
+	log.Tracef("RPC client send handler done for %s", c.config.Host)
 }
 
 // sendPostRequest sends the passed HTTP request to the RPC server using the

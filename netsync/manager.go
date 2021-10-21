@@ -1306,6 +1306,8 @@ func (sm *SyncManager) handleInvMsg(imsg *invMsg) {
 // important because the sync manager controls which blocks are needed and how
 // the fetching should proceed.
 func (sm *SyncManager) blockHandler() {
+	defer sm.wg.Done()
+
 	stallTicker := time.NewTicker(stallSampleInterval)
 	defer stallTicker.Stop()
 
@@ -1379,7 +1381,6 @@ out:
 		}
 	}
 
-	sm.wg.Done()
 	log.Trace("Block handler done")
 }
 

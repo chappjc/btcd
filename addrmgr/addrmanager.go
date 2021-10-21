@@ -341,6 +341,8 @@ func (a *AddrManager) getTriedBucket(netAddr *wire.NetAddress) int {
 // addressHandler is the main handler for the address manager.  It must be run
 // as a goroutine.
 func (a *AddrManager) addressHandler() {
+	defer a.wg.Done()
+
 	dumpAddressTicker := time.NewTicker(dumpAddressInterval)
 	defer dumpAddressTicker.Stop()
 out:
@@ -354,7 +356,6 @@ out:
 		}
 	}
 	a.savePeers()
-	a.wg.Done()
 	log.Trace("Address handler done")
 }
 
