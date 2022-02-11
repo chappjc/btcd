@@ -3,7 +3,7 @@ module github.com/btcsuite/btcd/btcutil/psbt
 go 1.17
 
 require (
-	github.com/btcsuite/btcd v0.22.0-beta.0.20220111032746-97732e52810c
+	github.com/btcsuite/btcd v0.22.0-beta.0.20220207191057-4dc4ff7963b4
 	github.com/btcsuite/btcd/btcec/v2 v2.1.0
 	github.com/btcsuite/btcd/btcutil v1.1.0
 	github.com/davecgh/go-spew v1.1.1
