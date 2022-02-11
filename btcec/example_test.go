@@ -5,12 +5,18 @@
 package btcec_test
 
 import (
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 
 	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
 )
+
+func doubleHash(b []byte) []byte {
+	first := sha256.Sum256(b)
+	second := sha256.Sum256(first[:])
+	return second[:]
+}
 
 // This example demonstrates signing a message with a secp256k1 private key that
 // is first parsed form raw bytes and serializing the generated signature.
@@ -26,7 +32,7 @@ func Example_signMessage() {
 
 	// Sign a message using the private key.
 	message := "test message"
-	messageHash := chainhash.DoubleHashB([]byte(message))
+	messageHash := doubleHash([]byte(message))
 	signature, err := privKey.Sign(messageHash)
 	if err != nil {
 		fmt.Println(err)
@@ -79,7 +85,7 @@ func Example_verifySignature() {
 
 	// Verify the signature for the message using the public key.
 	message := "test message"
-	messageHash := chainhash.DoubleHashB([]byte(message))
+	messageHash := doubleHash([]byte(message))
 	verified := signature.Verify(messageHash, pubKey)
 	fmt.Println("Signature Verified?", verified)
 
@@ -153,6 +159,10 @@ func Example_decryptMessage() {
 		"00207cf4ac6057406e40f79961c973309a892732ae7a74ee96cd89823913b8b8d650" +
 		"a44166dc61ea1c419d47077b748a9c06b8d57af72deb2819d98a9d503efc59fc8307" +
 		"d14174f8b83354fac3ff56075162")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	// Try decrypting the message.
 	plaintext, err := btcec.Decrypt(privKey, ciphertext)
