@@ -15,7 +15,7 @@ report.
 ## Installation and Updating
 
 ```bash
-$ go get -u github.com/btcsuite/btcd/btcutil/bloom
+$ go get -d github.com/btcsuite/btcd/btcutil/v2/bloom@latest
 ```
 
 ## Examples

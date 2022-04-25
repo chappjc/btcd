@@ -13,8 +13,8 @@ package btcutil
 
 import (
 	"github.com/btcsuite/btcd/btcec/v2"
-	"github.com/btcsuite/btcd/btcutil/base58"
-	"github.com/btcsuite/btcd/btcutil/bech32"
+	"github.com/btcsuite/btcd/btcutil/v2/base58"
+	"github.com/btcsuite/btcd/btcutil/v2/bech32"
 	"golang.org/x/crypto/ripemd160"
 )
 

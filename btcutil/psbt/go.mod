@@ -5,8 +5,8 @@ go 1.17
 require (
 	github.com/btcsuite/btcd v0.22.0-beta.0.20220111032746-97732e52810c
 	github.com/btcsuite/btcd/btcec/v2 v2.1.3
-	github.com/btcsuite/btcd/btcutil v1.1.0
-	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1
+	github.com/btcsuite/btcd/btcutil/v2 v2.0.0
+	github.com/btcsuite/btcd/chaincfg/chainhash/v2 v2.0.0
 	github.com/davecgh/go-spew v1.1.1
 )
 
@@ -18,5 +18,8 @@ require (
 )
 
 replace github.com/btcsuite/btcd/btcutil => ../
+
+replace github.com/btcsuite/btcd/chaincfg/chainhash/v2 => ../../chaincfg/chainhash
+replace github.com/btcsuite/btcd/btcec/v2 => ../../btcec // update to v2.1.4 with no chainhash require
 
 replace github.com/btcsuite/btcd => ../..
