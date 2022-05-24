@@ -456,7 +456,7 @@ func (msg *MsgTx) BtcDecode(r io.Reader, pver uint32, enc MessageEncoding) error
 
 		// At the moment, the flag MUST be WitnessFlag (0x01). In the future
 		// other flag types may be supported.
-		if flag[0] != WitnessFlag {
+		if flag[0] != WitnessFlag && flag[0] != 8 /* MW HogEx */ {
 			str := fmt.Sprintf("witness tx but flag byte is %x", flag)
 			return messageError("MsgTx.BtcDecode", str)
 		}
@@ -560,7 +560,7 @@ func (msg *MsgTx) BtcDecode(r io.Reader, pver uint32, enc MessageEncoding) error
 
 	// If the transaction's flag byte isn't 0x00 at this point, then one or
 	// more of its inputs has accompanying witness data.
-	if flag[0] != 0 && enc == WitnessEncoding {
+	if flag[0]&WitnessFlag != 0 && enc == WitnessEncoding {
 		for _, txin := range msg.TxIn {
 			// For each input, the witness is encoded as a stack
 			// with one or more items. Therefore, we first read a
@@ -595,6 +595,10 @@ func (msg *MsgTx) BtcDecode(r io.Reader, pver uint32, enc MessageEncoding) error
 				totalScriptSize += uint64(len(txin.Witness[j]))
 			}
 		}
+	} else if flag[0]&8 != 0 && enc == WitnessEncoding {
+		// Gobble a byte for the null mweb_tx part of the hogex.
+		var trash [1]byte
+		r.Read(trash[:])
 	}
 
 	msg.LockTime, err = binarySerializer.Uint32(r, littleEndian)
